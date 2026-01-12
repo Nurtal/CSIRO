@@ -151,6 +151,9 @@ def run_scattering(dataset, J,L,patch_size):
         # Ajouter une dimension batch si nécessaire
         img = img[np.newaxis, :, :]
 
+        print(img)
+        print("-"*42)
+
         # Calcul des coefficients de scattering
         S = st_calc.scattering_coef(img)
 
@@ -180,20 +183,53 @@ def run_scattering(dataset, J,L,patch_size):
 
 
 
-def compute_embedding(image_name:str, j:int, l:int, patch_size:int):
+
+def run_scattering_single_shot(img, J,L):
+    """Compute scat (no patches, one vector for one image)
+
+    """
+    # init 
+    h, w = img.shape
+    st_calc = scattering.Scattering2d(M=h, N=w, J=J, L=L)
+
+    # black magic (scat lib attends un tenseur torch)
+    img = torch.from_numpy(img).float()
+    
+    # Ajouter une dimension batch si nécessaire
+    img = img[np.newaxis, :, :]
+
+    # Calcul des coefficients de scattering
+    S = st_calc.scattering_coef(img)
+
+    # Récupérer S0, S1, S2 et les convertir en numpy
+    S0 = S["S0"][0].cpu().numpy()
+    S1 = S["S1"][0].cpu().numpy() 
+    S2 = S["S2"][0].cpu().numpy() 
+
+    # Normalisation
+    epsilon = 1e-6
+    normalized_coeffs = normalize_scattering_coefficients(S0, S1, S2)
+
+    # Aplatir et concaténer les coefficients normalisés
+    S0_flat = normalized_coeffs['S0_norm'].flatten() 
+    S1_flat = normalized_coeffs['S1_norm'].flatten()
+    S2_flat = normalized_coeffs['S2_norm'].flatten() 
+    X = np.concatenate([S0_flat, S1_flat, S2_flat]) 
+
+    return X
+
+
+def compute_embedding(image_name:str, j:int, l:int):
     """ """
 
     # load image
     image = load_img(image_name)
+    
+    # run scats
+    X = run_scattering_single_shot(image, j,l)
 
-    # split into patches & compute scattering
-    patch_list, coords = extract_patches(image, patch_size, step=None, normalize='log', mask=None) 
-    X = run_scattering(patch_list, j,l, patch_size)
-
-    # normalize data
+    # 'normalize' data
     X = np.nan_to_num(X)
-    scaler = StandardScaler()
-    X_norm = scaler.fit_transform(X)
 
     return X
 
