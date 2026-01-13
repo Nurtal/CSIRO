@@ -24,5 +24,6 @@ ou est ce que c'est une connerie et à ce moment là je fusionne les embeddings 
 ou je fais juste un patch de la taille de l'image, pour commencer ça peut être simple -> c'est ce que j'ai fais pour commencer
 
 Une image a plusieurs labels associé, en fait j'ai l'impression que la prediction doit etre la quantitée de biomass par espece presente, pas la quantite totale
-donc la generation de dataset est devenue d'un coup plus tricky, il faut que je reflechisse un peu
+donc la generation de dataset est devenue d'un coup plus tricky, il faut que je reflechisse un peu -> la col target_name est la clée, plusieurs target par image,
+on peut filtrer là dessus et faire plusieurs dataset
 
