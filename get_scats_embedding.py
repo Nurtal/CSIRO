@@ -5,6 +5,8 @@ import numpy as np
 import torch
 import scattering
 from sklearn.preprocessing import StandardScaler
+import glob
+import pandas as pd
 
 
 def load_img(img_file:str):
@@ -234,6 +236,40 @@ def compute_embedding(image_name:str, j:int, l:int):
     return X
 
 
+def craft_embedded_dataset(j, l, data_file):
+    """ """
+
+    data = []
+    train_img_list =glob.glob("data/biomass/train/*.jpg") 
+    total = len(train_img_list)
+    n = 1
+    for train_img in train_img_list:
+
+        # extract ID & compute embedding
+        id_img = train_img.split("/")[-1].replace('.jpg', '')
+        X = compute_embedding(train_img, j, l)
+
+        # craft vector
+        vector = {'ID':id_img}
+        cmpt = 1
+        for x in X:
+            vector[f"P{cmpt}"] = x 
+            cmpt +=1
+
+        # display progress
+        print(f"[PROGRESS] {n} / {total}")
+        n+=1
+
+        # append vector to data
+        data.append(vector)
+
+    # craft dataframe
+    df = pd.DataFrame(data)
+
+    # save dataframe
+    df.to_csv(data_file, index=False)
+
+
 
 if __name__ == "__main__":
 
@@ -244,7 +280,7 @@ if __name__ == "__main__":
     patch_size = 32
 
     # run
-    v = compute_embedding(img_file, j, l, patch_size)
+    # v = compute_embedding(img_file, j, l)
+    craft_embedded_dataset(j,l, "data/test.csv")
 
-    print(v)
     

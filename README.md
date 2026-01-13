@@ -21,5 +21,8 @@ cp -r scattering_transform/scattering .
 ## Notes
 pour l'embedding j'ai un embedding par patch, est ce que je joue là dessus en supossant une distribution uniforme de la biomasse sur les images ? (et du coup un patch est associé à la biomass totale présente sur l'image / nb de patch)
 ou est ce que c'est une connerie et à ce moment là je fusionne les embeddings ? sauf que là du coup je me retrouve avec une representation du bazar en très grande dimension
-ou je fais juste un patch de la taille de l'image, pour commencer ça peut être simple
+ou je fais juste un patch de la taille de l'image, pour commencer ça peut être simple -> c'est ce que j'ai fais pour commencer
+
+Une image a plusieurs labels associé, en fait j'ai l'impression que la prediction doit etre la quantitée de biomass par espece presente, pas la quantite totale
+donc la generation de dataset est devenue d'un coup plus tricky, il faut que je reflechisse un peu
 
